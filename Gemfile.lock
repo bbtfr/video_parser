@@ -1,0 +1,49 @@
+GEM
+  remote: http://ruby.taobao.org/
+  specs:
+    addressable (2.3.8)
+    browsermob-proxy (0.2.0)
+      childprocess (~> 0.5)
+      har
+      multi_json (~> 1.0)
+      rest-client
+    childprocess (0.5.6)
+      ffi (~> 1.0, >= 1.0.11)
+    domain_name (0.5.24)
+      unf (>= 0.0.5, < 1.0.0)
+    ffi (1.9.10)
+    har (0.1.0)
+      jschematic (>= 0.1.0)
+      json
+      launchy (>= 0.3.7)
+    http-cookie (1.0.2)
+      domain_name (~> 0.5)
+    jschematic (0.1.0)
+      addressable
+    json (1.8.3)
+    launchy (2.4.3)
+      addressable (~> 2.3)
+    mime-types (2.6.1)
+    multi_json (1.11.2)
+    netrc (0.10.3)
+    rest-client (1.8.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 3.0)
+      netrc (~> 0.7)
+    rubyzip (1.1.7)
+    selenium-webdriver (2.46.2)
+      childprocess (~> 0.5)
+      multi_json (~> 1.0)
+      rubyzip (~> 1.0)
+      websocket (~> 1.0)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.1)
+    websocket (1.2.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  browsermob-proxy
+  selenium-webdriver
