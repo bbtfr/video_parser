@@ -5,7 +5,7 @@ require 'csv'
 
 ENV["CSV_PATH"] ||= "ml-latest"
 ENV["JAVA_HOME"] ||= `/usr/libexec/java_home`.strip
-ENV["BrowserMobProxy"] ||= "/usr/local/bin/browsermob-proxy"
+ENV["BROWSER_MOB_PROXY"] ||= "/usr/local/bin/browsermob-proxy"
 
 movies = CSV.read("#{ENV["CSV_PATH"]}/movies.csv")
 movies = movies.select do |movie|
@@ -23,7 +23,7 @@ imdb_links = links.map do |link|
   "http://www.imdb.com/title/tt#{link[1]}/videogallery"
 end
 
-server = BrowserMob::Proxy::Server.new(ENV["BrowserMobProxy"])
+server = BrowserMob::Proxy::Server.new(ENV["BROWSER_MOB_PROXY"])
 server.start
 
 proxy = server.create_proxy
