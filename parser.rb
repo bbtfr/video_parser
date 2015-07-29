@@ -23,24 +23,41 @@ imdb_links = links.map do |link|
   "http://www.imdb.com/title/tt#{link[1]}/videogallery"
 end
 
+def retry_five_times items, &block
+  items.each do |*args|
+    retries = 0
+    begin
+      block.call *args
+    rescue Interrupt
+      raise
+    rescue Exception => e
+      retries += 1
+      if retries > 3
+        next
+      else
+        puts "#{e.class}: #{e.message}, retry ##{retries} in 3 seconds."
+        sleep 3
+        retry
+      end
+    end
+  end
+end
+
 server = BrowserMob::Proxy::Server.new(ENV["BROWSER_MOB_PROXY"])
 server.start
 
 proxy = server.create_proxy
 
-profile = Selenium::WebDriver::Firefox::Profile.new
-profile.proxy = proxy.selenium_proxy
-
 client = Selenium::WebDriver::Remote::Http::Default.new
 client.timeout = 20
 
-driver = Selenium::WebDriver.for :firefox, :profile => profile, :http_client => client
+driver = Selenium::WebDriver.for :chrome, :http_client => client, proxy: proxy.selenium_proxy
 driver.manage.timeouts.implicit_wait = 3
 
 begin
   FileUtils.mkdir "downloads" rescue nil
 
-  imdb_links.each do |imdb_link|
+  retry_five_times imdb_links do |imdb_link|
     imdb_link =~ /\/tt(\d+)/
     imdb_movie_id = $1
     next if File.exists? "downloads/#{imdb_movie_id}"
@@ -49,14 +66,14 @@ begin
     puts "Open Video Gallery Page: #{imdb_link.inspect}."
     driver.navigate.to imdb_link rescue nil
 
-    wait = Selenium::WebDriver::Wait.new timeout: 20
+    wait = Selenium::WebDriver::Wait.new timeout: 5
     movie_title = wait.until do
       driver.find_element :css, '.subpage_title_block .parent'
     end
     movie_title = movie_title.text
     puts "Get Page Title: #{movie_title.inspect}."
 
-    wait = Selenium::WebDriver::Wait.new timeout: 20
+    wait = Selenium::WebDriver::Wait.new timeout: 5
     search_result_links = wait.until do
       driver.find_elements :css, '.search-results .results-item h2 a'
     end
@@ -71,7 +88,7 @@ begin
       file.puts "Video Pages: \n#{search_result_links.join("\n")}"
     end
 
-    search_result_links.each do |search_result_link|
+    retry_five_times search_result_links do |search_result_link|
       search_result_link =~ /\/vi(\d+)/
       imdb_video_id = $1
       next if File.exists? "downloads/#{imdb_movie_id}.wip/#{imdb_video_id}.mp4"
@@ -80,23 +97,24 @@ begin
       puts "Open Video Page: #{search_result_link.inspect}."
       driver.navigate.to search_result_link rescue nil
 
-      wait = Selenium::WebDriver::Wait.new timeout: 60
+      puts "Parse Video Link from requests."
+      wait = Selenium::WebDriver::Wait.new timeout: 20
       entry = wait.until do
         proxy.har.entries.find do |entry|
-          entry.request.url =~ /video-http.media-imdb.com/
+          entry.request.url =~ /\.mp4/
         end
       end
 
       imdb_video_url = entry.request.url
 
-      wait = Selenium::WebDriver::Wait.new timeout: 20
+      wait = Selenium::WebDriver::Wait.new timeout: 5
       video_title = wait.until do
         driver.find_element :css, '#main h1'
       end
       video_title = video_title.text
       puts "Get Video Title: #{video_title.inspect}."
 
-      wait = Selenium::WebDriver::Wait.new timeout: 20
+      wait = Selenium::WebDriver::Wait.new timeout: 5
       video_description = wait.until do
         driver.find_element :css, '#main .data-table'
       end
@@ -125,10 +143,11 @@ begin
 
     FileUtils.mv "downloads/#{imdb_movie_id}.wip", "downloads/#{imdb_movie_id}"
   end
+rescue Interrupt
+  exit
 rescue Exception => e
-  puts "#{e.class}: #{e.message}, retry in 10 seconds."
-  sleep 10
-  retry
+  puts "#{e.class}: #{e.message}"
+  puts e.backtrace.join("\n")
 ensure
   proxy.close
   driver.quit
