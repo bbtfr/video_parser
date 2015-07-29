@@ -33,10 +33,10 @@ def retry_five_times items, &block
     rescue Exception => e
       retries += 1
       if retries > 3
+        puts "#{e.class}: #{e.message}, retried 3 times, ignore and go next."
         next
       else
-        puts "#{e.class}: #{e.message}, retry ##{retries} in 3 seconds."
-        sleep 3
+        puts "#{e.class}: #{e.message}, retry ##{retries}."
         retry
       end
     end
@@ -52,7 +52,6 @@ client = Selenium::WebDriver::Remote::Http::Default.new
 client.timeout = 20
 
 driver = Selenium::WebDriver.for :chrome, :http_client => client, proxy: proxy.selenium_proxy
-driver.manage.timeouts.implicit_wait = 3
 
 begin
   FileUtils.mkdir "downloads" rescue nil
