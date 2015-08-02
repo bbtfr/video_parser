@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+  "name": "video_parser",
+  "version": "1.0",
+  "icons": {
+    "16": "icons/16.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  "devtools_page": "devtools.html",
+  "background": {
+    "page": "background.html"
+  },
+  "permissions": [
+    "tabs",
+    "downloads",
+    "webRequest",
+    "*://*/*"
+  ],
+  "minimum_chrome_version": "10.0"
+}

@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <link rel='stylesheet' href='css/ratchet.css'>
+    <link rel='stylesheet' href='devpanel.css'>
+  </head>
+  <body>
+    <script src="devpanel.js"></script>
+    <div class="content">
+      <div class="content-padded">
+        <input type="text" placeholder="Video Link Regex, Default: '\.mp4|\.m3u8|\.ts'" id="video-link-regex-input">
+        <input type="number" placeholder="Video Page Ready Timeout, Default: 20" id="video-page-ready-timeout-input">
+        <input type="number" placeholder="Video Sniffer Timeout, Default: 10" id="video-sniffer-timeout-input">
+        <input type="number" placeholder="Video Download Concurrent, Default: 3" id="video-download-concurrent-input">
+        <textarea rows="4" placeholder="Video Page URLs" id="video-page-urls-textarea"></textarea>
+        <button class="btn btn-primary" id="start-fetch-button">
+          <span class="icon icon-download"></span>
+          Start Fetch
+        </button>
+
+        <div class="content-top-padded">
+          <ol id="logs"></ol>
+        </div>
+
+      </div>
+    </div>
+  </body>
+</html>

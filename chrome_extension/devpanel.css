@@ -1,0 +1,15 @@
+textarea {
+  padding: 10px 15px;
+}
+
+.content-top-padded {
+  padding-top: 20px;
+}
+
+#progress {
+  display: none;
+}
+
+#progress.fetching {
+  display: block;
+}
