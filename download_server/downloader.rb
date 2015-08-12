@@ -5,9 +5,9 @@ require 'yaml'
 
 ENV["JAVA_HOME"] ||= `/usr/libexec/java_home`.strip
 ENV["BROWSER_MOB_PROXY"] ||= "/usr/local/bin/browsermob-proxy"
-ENV["DOWNLOADS"] ||= "downloads.yml"
+ENV["DOWNLOADS_YAML"] ||= "downloads.yml"
 
-GALLERY = YAML.load(File.read(ENV["DOWNLOADS"])) || []
+GALLERY = YAML.load(File.read(ENV["DOWNLOADS_YAML"])) || []
 
 def retry_five_times items, &block
   items.each do |*args|

@@ -3,6 +3,10 @@ require 'open-uri'
 require 'yaml'
 require 'csv'
 
+ENV["CSV_DIR"] ||= "ml-latest"
+ENV["DOWNLOADS_YAML"] ||= "downloads.yml"
+ENV["MOVIE_PATTERN"] ||= "\(2014\)"
+
 class String
   def cleanup
     self.strip.gsub(/\s+/, " ")
@@ -13,18 +17,16 @@ class String
   end
 end
 
-ENV["CSV_PATH"] ||= "ml-latest"
-ENV["DOWNLOADS"] ||= "downloads.yml"
-
-GALLERY = YAML.load(File.read(ENV["DOWNLOADS"])) || []
+GALLERY = YAML.load(File.read(ENV["DOWNLOADS_YAML"])) || []
+MOVIE_PATTERN = Regexp.new ENV["MOVIE_PATTERN"]
 
 begin
-  movies = CSV.read("#{ENV["CSV_PATH"]}/movies.csv")
+  movies = CSV.read("#{ENV["CSV_DIR"]}/movies.csv")
   movies = movies.select do |movie|
-    movie[1] =~ /\(2014\)/
+    movie[1] =~ MOVIE_PATTERN
   end
 
-  links = CSV.read("#{ENV["CSV_PATH"]}/links.csv")
+  links = CSV.read("#{ENV["CSV_DIR"]}/links.csv")
   links = movies.map do |movie|
     links.find do |link|
       link[0] == movie[0]
